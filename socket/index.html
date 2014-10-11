@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="zh" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>chat-Room</title>	
+	</head>
+
+	<body>
+	<div id ="container">	
+		<p>userNum<span id="num"></span><p>
+		<p><span id="user"><span><p>	
+		<textarea  id="message" cols="30" rows="10" ></textarea>
+		<div id="send">
+			<textarea name="input" id="input" cols="30" rows="5" placeholder="input anything"></textarea>
+			<button id="sub" onclick ="sendMsg()">send</button>
+		</div>
+
+	</div>
+	</body>
+<script type="text/javascript">
+	var $ = function(id){return document.getElementById(id) || null;};
+	var host = 'ws://127.0.0.1:12349';
+	var ws = new WebSocket(host);
+	ws.onopen = function(evt){console.log("link successful");};
+	ws.onmessage = function(evt){onMessage(evt);};
+	ws.onclose = function(evt){onclose(evt);};
+	ws.onerror = function(evt){console.log("on Error!");};
+	
+	function onMessage(evt) {
+		var data = JSON.parse(evt.data);
+		switch(data.type){
+			case 'num':
+			// data = JSON.parse(data.msg);
+			$('num').innerText = data.msg;
+			break;
+
+			case 'msg':
+			data = JSON.parse(data.msg);
+			var text = data.user+"say : "+data.msg+"\n";
+			$('message').value = text;
+			break;
+		}
+		
+
+	}; 
+	function sendMsg(){
+		var msg =$('input').value;
+		alert(msg);
+		ws.send(msg);
+		$('input').value = '';
+	}
+	function onclose(evt){
+		// ws.close(evt);
+		console.log("close");
+	}
+</script>
+</html>
+	
